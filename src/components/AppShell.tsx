@@ -2,7 +2,7 @@ import { Link, Outlet } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { toast } from "sonner";
-import { LogIn, LogOut, ScanLine, Tags, BarChart3, Power } from "lucide-react";
+import { LogIn, ScanLine, Tags, BarChart3, Power } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { rupiah } from "@/lib/format";
 
@@ -88,4 +88,3 @@ export function AppShell() {
   );
 }
 
-export { LogOut };

@@ -30,27 +30,27 @@ function Tarif() {
 
   async function add() {
     const a = parseInt(amount, 10);
-    if (!name.trim() || isNaN(a) || a < 0) return toast.error("Isi nama dan tarif");
+    if (!name.trim() || isNaN(a) || a < 0) { toast.error("Isi nama dan tarif"); return; }
     const { error } = await supabase.from("tariffs").insert({ name: name.trim(), amount: a });
-    if (error) return toast.error(error.message);
+    if (error) { toast.error(error.message); return; }
     setName(""); setAmount(""); refresh(); toast.success("Kategori ditambahkan");
   }
   async function save(id: string) {
     const a = parseInt(eAmount, 10);
-    if (!eName.trim() || isNaN(a) || a < 0) return toast.error("Data tidak valid");
+    if (!eName.trim() || isNaN(a) || a < 0) { toast.error("Data tidak valid"); return; }
     const { error } = await supabase.from("tariffs").update({ name: eName.trim(), amount: a }).eq("id", id);
-    if (error) return toast.error(error.message);
+    if (error) { toast.error(error.message); return; }
     setEditId(null); refresh();
   }
   async function remove(id: string, n: string) {
     if (!confirm(`Hapus kategori "${n}"?`)) return;
     const { error } = await supabase.from("tariffs").delete().eq("id", id);
-    if (error) return toast.error(error.message);
+    if (error) { toast.error(error.message); return; }
     refresh();
   }
   async function saveLoc() {
     const { error } = await supabase.from("app_settings").upsert({ id: 1, location_name: loc.trim() || "Parkir" });
-    if (error) return toast.error(error.message);
+    if (error) { toast.error(error.message); return; }
     qc.invalidateQueries({ queryKey: ["settings"] });
     toast.success("Nama lokasi disimpan");
   }

@@ -59,8 +59,8 @@ function Masuk() {
 
   async function submit() {
     const p = plate.trim().toUpperCase().replace(/\s+/g, " ");
-    if (!selected) return toast.error("Pilih kategori kendaraan");
-    if (p.length < 3) return toast.error("Isi nomor plat");
+    if (!selected) { toast.error("Pilih kategori kendaraan"); return; }
+    if (p.length < 3) { toast.error("Isi nomor plat"); return; }
     setBusy(true);
     const { data, error } = await supabase
       .from("tickets")
@@ -68,7 +68,7 @@ function Masuk() {
       .select("ticket_no, plate, category, amount, entered_at")
       .single();
     setBusy(false);
-    if (error) return toast.error(error.message);
+    if (error) { toast.error(error.message); return; }
     setLast(data);
     setPlate("");
     qc.invalidateQueries({ queryKey: ["tickets"] });

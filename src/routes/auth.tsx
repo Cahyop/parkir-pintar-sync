@@ -34,14 +34,14 @@ function AuthPage() {
     if (mode === "in") {
       const { error } = await supabase.auth.signInWithPassword({ email, password });
       setBusy(false);
-      if (error) return toast.error(error.message);
+      if (error) { toast.error(error.message); return; }
       navigate({ to: "/masuk" });
     } else {
       const { data, error } = await supabase.auth.signUp({
         email, password, options: { emailRedirectTo: window.location.origin + "/masuk" },
       });
       setBusy(false);
-      if (error) return toast.error(error.message);
+      if (error) { toast.error(error.message); return; }
       if (data.session) navigate({ to: "/masuk" });
       else toast.success("Cek email Anda untuk konfirmasi akun.");
     }

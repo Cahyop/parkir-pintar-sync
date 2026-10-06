@@ -56,7 +56,7 @@ function Rekap() {
   );
 }
 
-function Stat({ label, value, highlight }: { label: string; value?: number; highlight?: boolean }) {
+function Stat({ label, value, highlight }: { label: string; value?: number | undefined; highlight?: boolean }) {
   return (
     <div className={`rounded-lg border p-3 ${highlight ? "border-primary" : "border-border"} bg-card`}>
       <div className="text-xs text-muted-foreground">{label}</div>
