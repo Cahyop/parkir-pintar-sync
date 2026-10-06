@@ -10,33 +10,94 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
+import { Route as AuthRouteImport } from './routes/auth'
+import { Route as AuthenticatedKeluarRouteImport } from './routes/_authenticated/keluar'
+import { Route as AuthenticatedMasukRouteImport } from './routes/_authenticated/masuk'
+import { Route as AuthenticatedRekapRouteImport } from './routes/_authenticated/rekap'
+import { Route as AuthenticatedTarifRouteImport } from './routes/_authenticated/tarif'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
+  id: '/_authenticated',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedKeluarRoute = AuthenticatedKeluarRouteImport.update({
+  id: '/keluar',
+  path: '/keluar',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedMasukRoute = AuthenticatedMasukRouteImport.update({
+  id: '/masuk',
+  path: '/masuk',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedRekapRoute = AuthenticatedRekapRouteImport.update({
+  id: '/rekap',
+  path: '/rekap',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedTarifRoute = AuthenticatedTarifRouteImport.update({
+  id: '/tarif',
+  path: '/tarif',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
+  '/keluar': typeof AuthenticatedKeluarRoute
+  '/masuk': typeof AuthenticatedMasukRoute
+  '/rekap': typeof AuthenticatedRekapRoute
+  '/tarif': typeof AuthenticatedTarifRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
+  '/keluar': typeof AuthenticatedKeluarRoute
+  '/masuk': typeof AuthenticatedMasukRoute
+  '/rekap': typeof AuthenticatedRekapRoute
+  '/tarif': typeof AuthenticatedTarifRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
+  '/auth': typeof AuthRoute
+  '/_authenticated/keluar': typeof AuthenticatedKeluarRoute
+  '/_authenticated/masuk': typeof AuthenticatedMasukRoute
+  '/_authenticated/rekap': typeof AuthenticatedRekapRoute
+  '/_authenticated/tarif': typeof AuthenticatedTarifRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths: '/' | '/auth' | '/keluar' | '/masuk' | '/rekap' | '/tarif'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to: '/' | '/auth' | '/keluar' | '/masuk' | '/rekap' | '/tarif'
+  id:
+    | '__root__'
+    | '/'
+    | '/_authenticated'
+    | '/auth'
+    | '/_authenticated/keluar'
+    | '/_authenticated/masuk'
+    | '/_authenticated/rekap'
+    | '/_authenticated/tarif'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
+  AuthRoute: typeof AuthRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,11 +109,72 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/keluar': {
+      id: '/_authenticated/keluar'
+      path: '/keluar'
+      fullPath: '/keluar'
+      preLoaderRoute: typeof AuthenticatedKeluarRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/masuk': {
+      id: '/_authenticated/masuk'
+      path: '/masuk'
+      fullPath: '/masuk'
+      preLoaderRoute: typeof AuthenticatedMasukRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/rekap': {
+      id: '/_authenticated/rekap'
+      path: '/rekap'
+      fullPath: '/rekap'
+      preLoaderRoute: typeof AuthenticatedRekapRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/tarif': {
+      id: '/_authenticated/tarif'
+      path: '/tarif'
+      fullPath: '/tarif'
+      preLoaderRoute: typeof AuthenticatedTarifRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
   }
 }
 
+interface AuthenticatedRouteRouteChildren {
+  AuthenticatedKeluarRoute: typeof AuthenticatedKeluarRoute
+  AuthenticatedMasukRoute: typeof AuthenticatedMasukRoute
+  AuthenticatedRekapRoute: typeof AuthenticatedRekapRoute
+  AuthenticatedTarifRoute: typeof AuthenticatedTarifRoute
+}
+
+const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedKeluarRoute: AuthenticatedKeluarRoute,
+  AuthenticatedMasukRoute: AuthenticatedMasukRoute,
+  AuthenticatedRekapRoute: AuthenticatedRekapRoute,
+  AuthenticatedTarifRoute: AuthenticatedTarifRoute,
+}
+
+const AuthenticatedRouteRouteWithChildren =
+  AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
+  AuthRoute: AuthRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
