@@ -4,8 +4,9 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { Pencil, Trash2, Plus, X, Check } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { tariffsQuery, settingsQuery } from "@/lib/queries";
+import { tariffsQuery, settingsQuery, eventsConfigQuery } from "@/lib/queries";
 import { rupiah } from "@/lib/format";
+import { saveEventsConfig, type EventsConfig } from "@/lib/events";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
@@ -48,10 +49,19 @@ function Tarif() {
     if (error) { toast.error(error.message); return; }
     refresh();
   }
+  const { data: eventsConfig } = useQuery(eventsConfigQuery);
+
   async function saveLoc() {
-    const { error } = await supabase.from("app_settings").upsert({ id: 1, location_name: loc.trim() || "Parkir" });
-    if (error) { toast.error(error.message); return; }
+    const newName = loc.trim() || "Parkir";
+    const currentConfig: EventsConfig = eventsConfig ? { ...eventsConfig } : {
+      locationName: newName,
+      activeEventId: null,
+      events: [],
+    };
+    currentConfig.locationName = newName;
+    await saveEventsConfig(currentConfig);
     qc.invalidateQueries({ queryKey: ["settings"] });
+    qc.invalidateQueries({ queryKey: ["eventsConfig"] });
     toast.success("Nama lokasi disimpan");
   }
 

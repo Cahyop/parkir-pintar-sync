@@ -100,6 +100,8 @@ class Builder {
 
 export type TicketPrint = {
   location: string;
+  eventName?: string | null;
+  operatorName?: string | null;
   ticketNo: string;
   plate: string;
   category: string;
@@ -114,13 +116,23 @@ export async function printTicket(t: TicketPrint) {
   const row = (l: string, r: string) => l + " ".repeat(Math.max(1, cols - l.length - r.length)) + r;
   const b = new Builder()
     .raw(0x1b, 0x40)
-    .align(1).bold(true).size(2, 2).line(t.location.slice(0, cols / 2)).size(1, 1).bold(false)
-    .line("TIKET PARKIR").line(sep)
+    .align(1).bold(true).size(2, 2).line(t.location.slice(0, Math.floor(cols / 2))).size(1, 1).bold(false);
+
+  if (t.eventName) {
+    b.bold(true).line(`*** ${t.eventName.toUpperCase()} ***`).bold(false);
+  }
+
+  b.line("TIKET PARKIR").line(sep)
     .align(1).bold(true).size(2, 2).line(t.plate).size(1, 1).bold(false)
     .align(0)
     .line(row("No. Tiket", t.ticketNo))
-    .line(row("Kategori", t.category))
-    .line(row("Masuk", t.enteredAt))
+    .line(row("Kategori", t.category));
+
+  if (t.operatorName) {
+    b.line(row("Petugas", t.operatorName));
+  }
+
+  b.line(row("Masuk", t.enteredAt))
     .bold(true).line(row("Tarif", t.amount)).bold(false)
     .align(1).line(row("Status", "LUNAS")).line(sep)
     .qr(t.ticketNo, w === 80 ? 8 : 6)
@@ -130,3 +142,70 @@ export async function printTicket(t: TicketPrint) {
     .raw(0x1d, 0x56, 0x42, 0x00);
   await write(b.build());
 }
+
+export type EventReportPrint = {
+  location: string;
+  eventName: string;
+  eventDate: string;
+  closedAt: string;
+  totalRevenue: string;
+  enteredCount: number;
+  exitedCount: number;
+  parkedCount: number;
+  categoryBreakdown: { category: string; count: number; subtotal: string }[];
+  staffBreakdown: { staff: string; count: number; subtotal: string }[];
+};
+
+export async function printEventReport(r: EventReportPrint) {
+  const w = getPaperWidth();
+  const cols = w === 80 ? 48 : 32;
+  const sep = "=".repeat(cols);
+  const dash = "-".repeat(cols);
+  const row = (l: string, rt: string) => l + " ".repeat(Math.max(1, cols - l.length - rt.length)) + rt;
+
+  const b = new Builder()
+    .raw(0x1b, 0x40)
+    .align(1).bold(true).size(2, 2).line(r.location.slice(0, Math.floor(cols / 2))).size(1, 1).bold(false)
+    .line("LAPORAN REKAP KAS EVENT")
+    .bold(true).line(r.eventName.toUpperCase()).bold(false)
+    .line(sep)
+    .align(0)
+    .line(row("Tanggal Event", r.eventDate))
+    .line(row("Waktu Cetak", r.closedAt))
+    .line(dash)
+    .bold(true)
+    .line(row("TOTAL PENDAPATAN", r.totalRevenue))
+    .bold(false)
+    .line(row("Total Masuk", `${r.enteredCount} kend`))
+    .line(row("Total Keluar", `${r.exitedCount} kend`))
+    .line(row("Masih Parkir", `${r.parkedCount} kend`))
+    .line(dash);
+
+  if (r.categoryBreakdown.length > 0) {
+    b.bold(true).line("RINCIAN PER KATEGORI:").bold(false);
+    for (const cat of r.categoryBreakdown) {
+      b.line(row(`${cat.category} (${cat.count})`, cat.subtotal));
+    }
+    b.line(dash);
+  }
+
+  if (r.staffBreakdown.length > 0) {
+    b.bold(true).line("RINCIAN PER PETUGAS:").bold(false);
+    for (const st of r.staffBreakdown) {
+      b.line(row(`${st.staff} (${st.count})`, st.subtotal));
+    }
+    b.line(dash);
+  }
+
+  b.align(1)
+    .line()
+    .line("Tanda Tangan Panitia / Petugas")
+    .line()
+    .line()
+    .line("(.........................)")
+    .line().line().line()
+    .raw(0x1d, 0x56, 0x42, 0x00);
+
+  await write(b.build());
+}
+
