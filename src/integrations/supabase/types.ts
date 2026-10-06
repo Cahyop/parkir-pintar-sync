@@ -14,7 +14,78 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      app_settings: {
+        Row: {
+          id: number
+          location_name: string
+        }
+        Insert: {
+          id?: number
+          location_name?: string
+        }
+        Update: {
+          id?: number
+          location_name?: string
+        }
+        Relationships: []
+      }
+      tariffs: {
+        Row: {
+          amount: number
+          created_at: string
+          id: string
+          name: string
+        }
+        Insert: {
+          amount?: number
+          created_at?: string
+          id?: string
+          name: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          id?: string
+          name?: string
+        }
+        Relationships: []
+      }
+      tickets: {
+        Row: {
+          amount: number
+          category: string
+          created_by: string | null
+          entered_at: string
+          exited_at: string | null
+          id: string
+          paid: boolean
+          plate: string
+          ticket_no: string
+        }
+        Insert: {
+          amount: number
+          category: string
+          created_by?: string | null
+          entered_at?: string
+          exited_at?: string | null
+          id?: string
+          paid?: boolean
+          plate: string
+          ticket_no?: string
+        }
+        Update: {
+          amount?: number
+          category?: string
+          created_by?: string | null
+          entered_at?: string
+          exited_at?: string | null
+          id?: string
+          paid?: boolean
+          plate?: string
+          ticket_no?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
